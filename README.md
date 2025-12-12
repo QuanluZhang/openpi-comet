@@ -21,7 +21,7 @@
         alt="Comet Submission"
     />
   </a>
-  <a href="docs/report.pdf">
+  <a href="https://arxiv.org/abs/2512.10071">
     <img
       src="https://img.shields.io/badge/Comet--Submission-Paper-red?logo=arxiv&logoColor=red"
       alt="Implementation Report"
@@ -34,15 +34,28 @@
 > [!TIP]
 > OpenPi Comet is the submission of Team Comet for the [2025 BEHAVIOR Challenge](https://behavior.stanford.edu/index.html). This repository provides a unified framework for pre-training, post-training, data generation and evaluation of π0.5 (Pi05) models on BEHAVIOR-1K.
 
-Our [[First Submission]](https://behavior.stanford.edu/challenge/leaderboard.html#privileged-information-track) achieved a Q-score of 0.2514, securing 2nd place overall and finishing just behind the winning team by a narrow margin—highlighting both the strong competitiveness of our approach and the effectiveness of our end-to-end VLA training strategy. This codebase contains:
+Our [[submission]](https://behavior.stanford.edu/challenge/leaderboard.html#privileged-information-track) achieved a Q-score of 0.2514, securing 2nd place overall and finishing just behind the winning team by a narrow margin—highlighting both the strong competitiveness of our approach and the effectiveness of our end-to-end VLA training strategy. 
 
+<p align="center">
+  <img src="docs/leaderboard.png" width="80%">
+</p>
+
+
+This codebase contains:
 1. Distributed OpenPi training infrastructure
-2. Support of hierarchical instructions (global, subtask, skill) and multimodal observations (RGB, depth, point cloud, segmentation, bounding boxes, human pointing) training setup
-3. High-throughput parallel simulation rollouts in BEHAVIOR-1K
-4. Post-training via Rejection Sampling Fine-Tuning (RFT) with automated dataset construction
+2. Various pre-training setup, including hierarchical instructions (global, subtask, skill) and multimodal observations (RGB, depth, point cloud, segmentation, bounding boxes, human pointing)
+3. Post-training via Rejection Sampling Fine-Tuning (RFT) with automated dataset construction
+4. Data generation scripts such as teleoperation and simulation rollouts using existing policy
 5. Model zoo of pretrained VLA checkpoints trained on 1M+ robot interactions
 
-Please check our [[Report]](./docs/report.pdf) for more details.
+Please check our [[Report]](https://arxiv.org/abs/2512.10071) for more details.
+
+<div align="center">
+  <video src="https://github.com/user-attachments/assets/dc74ce89-a3ba-4a5a-81b7-63557e586f09" controls width="720">
+  </video>
+</div>
+
+
 
 ## Updates
 
@@ -65,7 +78,7 @@ The repo has been tested with Ubuntu 22.04, we do not currently support other op
 ## Repo Clone
 
 ```bash
-git clone https://github.com/mli0603/comet-2025-b1k-challenge.git
+git clone https://github.com/mli0603/openpi-comet.git
 git clone https://github.com/StanfordVL/BEHAVIOR-1K.git
 ```
 This finetuning instruction is adapted from the original [openpi repo](https://github.com/Physical-Intelligence/openpi).
@@ -91,60 +104,45 @@ uv pip install -e OmniGibson[eval]
 
 We provide a suite of base VLA model checkpoints trained on 1M+ robot trajectories, ideal for BEHAVIOR-1K fine-tuning.
 
-|   Task ID | Task Name                               | HF URL                                                                                                                                                                                                                                                   |
+|   Model Name | Discription                          | HuggingFace URL                                                                                                                                                                                                                                          |
 |----------:|:----------------------------------------|:---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-|         0 | turning_on_radio                        | [comet_submission/turning_on_radio](https://huggingface.co/sunshk/comet_submission/tree/main/2025-11-12-18-33-57_pi05_b1k-turning_on_radio_cs32_bs64_lr2.5e-6_step15k_re_jax/14999)                                                                      |
-|         1 | picking_up_trash                        | [comet_submission/picking_up_trash](https://huggingface.co/sunshk/comet_submission/tree/main/17-36-51_pi05_b1k-pt12_cs32_bs32_lr2.5e-5_step100k_gpu80_jax/75000)                                                                                         |
-|         2 | putting_away_Halloween_decorations      | [comet_submission/putting_away_Halloween_decorations](https://huggingface.co/sunshk/comet_submission/tree/main/11-31-51_pi05_b1k-putting_away_Halloween_decorations_cs32_bs32_lr2.5e-6_step15k_sft_pt50_merge_25k_jax/14999)                             |
-|         3 | cleaning_up_plates_and_food             | [comet_submission/cleaning_up_plates_and_food](https://huggingface.co/sunshk/comet_submission/tree/main/10-00-32_pi05_b1k-pt50_merge1110_cs32_bs64_lr2.5e-5_step50k_gpu400_jax/40000)                                                                    |
-|         4 | can_meat                                | [comet_submission/can_meat](https://huggingface.co/sunshk/comet_submission/tree/main/10-00-32_pi05_b1k-pt50_merge1110_cs32_bs64_lr2.5e-5_step50k_gpu400_jax/40000)                                                                                       |
-|         5 | setting_mousetraps                      | [comet_submission/setting_mousetraps](https://huggingface.co/sunshk/comet_submission/tree/main/03-32-55_pi05_b1k-pt50_merge_cs32_bs64_lr2.5e-5_step50k_gpu400_jax/20000)                                                                                 |
-|         6 | hiding_Easter_eggs                      | [comet_submission/hiding_Easter_eggs](https://huggingface.co/sunshk/comet_submission/tree/main/2025-11-16-15-49-17_pi05_b1k-hiding_Easter_eggs_official_rollsamplelower_lr2.5e-6_step20k_sft_resume_jax/19999)                                           |
-|         7 | picking_up_toys                         | [comet_submission/picking_up_toys](https://huggingface.co/sunshk/comet_submission/tree/main/10-00-32_pi05_b1k-pt50_merge1110_cs32_bs64_lr2.5e-5_step50k_gpu400_jax/40000)                                                                                |
-|         8 | rearranging_kitchen_furniture           | [comet_submission/rearranging_kitchen_furniture](https://huggingface.co/sunshk/comet_submission/tree/main/03-32-55_pi05_b1k-pt50_merge_cs32_bs64_lr2.5e-5_step50k_gpu400_jax/45000)                                                                      |
-|         9 | putting_up_Christmas_decorations_inside | [comet_submission/putting_up_Christmas_decorations_inside](https://huggingface.co/sunshk/comet_submission/tree/main/10-00-32_pi05_b1k-pt50_merge1110_cs32_bs64_lr2.5e-5_step50k_gpu400_jax/40000)                                                        |
-|        10 | set_up_a_coffee_station_in_your_kitchen | [comet_submission/set_up_a_coffee_station_in_your_kitchen](https://huggingface.co/sunshk/comet_submission/tree/main/2025-11-16-15-49-17_pi05_b1k-set_up_a_coffee_station_in_your_kitchen_official_rollsamplelower_lr2.5e-6_step20k_sft_resume_jax/15000) |
-|        11 | putting_dishes_away_after_cleaning      | [comet_submission/putting_dishes_away_after_cleaning](https://huggingface.co/sunshk/comet_submission/tree/main/2025-11-16-15-41-28_pi05_b1k-putting_dishes_away_after_cleaning_official_rollsamplehigher_lr2.5e-6_step20k_sft_resume_jax/19999)          |
-|        12 | preparing_lunch_box                     | [comet_submission/preparing_lunch_box](https://huggingface.co/sunshk/comet_submission/tree/main/2025-11-16-15-41-27_pi05_b1k-preparing_lunch_box_official_rollsamplehigher_lr2.5e-6_step20k_sft_resume_jax/19999)                                        |
-|        13 | loading_the_car                         | [comet_submission/loading_the_car](https://huggingface.co/sunshk/comet_submission/tree/main/10-00-32_pi05_b1k-pt50_merge1110_cs32_bs64_lr2.5e-5_step50k_gpu400_jax/40000)                                                                                |
-|        14 | carrying_in_groceries                   | [comet_submission/carrying_in_groceries](https://huggingface.co/sunshk/comet_submission/tree/main/10-00-32_pi05_b1k-pt50_merge1110_cs32_bs64_lr2.5e-5_step50k_gpu400_jax/35000)                                                                          |
-|        15 | bringing_in_wood                        | [comet_submission/bringing_in_wood](https://huggingface.co/sunshk/comet_submission/tree/main/10-00-32_pi05_b1k-pt50_merge1110_cs32_bs64_lr2.5e-5_step50k_gpu400_jax/40000)                                                                               |
-|        16 | moving_boxes_to_storage                 | [comet_submission/moving_boxes_to_storage](https://huggingface.co/sunshk/comet_submission/tree/main/2025-11-12-19-00-46_pi05_b1k-pt10_merge1112_cs32_bs64_lr2.5e-5_step50k_gpu160_jax/40000)                                                             |
-|        17 | bringing_water                          | [comet_submission/bringing_water](https://huggingface.co/sunshk/comet_submission/tree/main/2025-11-12-15-45-53_pi05_b1k-pt10_re-pt12-49k-m_cs32_bs64_lr2.5e-6_step50k_gpu160_jax/45000)                                                                  |
-|        18 | tidying_bedroom                         | [comet_submission/tidying_bedroom](https://huggingface.co/sunshk/comet_submission/tree/main/10-00-32_pi05_b1k-pt50_merge1110_cs32_bs64_lr2.5e-5_step50k_gpu400_jax/40000)                                                                                |
-|        19 | outfit_a_basic_toolbox                  | [comet_submission/outfit_a_basic_toolbox](https://huggingface.co/sunshk/comet_submission/tree/main/2025-11-16-15-49-18_pi05_b1k-outfit_a_basic_toolbox_official_rollsamplelower_lr2.5e-6_step20k_sft_resume_jax/15000)                                   |
-|        20 | sorting_vegetables                      | [comet_submission/sorting_vegetables](https://huggingface.co/sunshk/comet_submission/tree/main/10-00-32_pi05_b1k-pt50_merge1110_cs32_bs64_lr2.5e-5_step50k_gpu400_jax/40000)                                                                             |
-|        21 | collecting_childrens_toys               | [comet_submission/collecting_childrens_toys](https://huggingface.co/sunshk/comet_submission/tree/main/10-00-32_pi05_b1k-pt50_merge1110_cs32_bs64_lr2.5e-5_step50k_gpu400_jax/40000)                                                                      |
-|        22 | putting_shoes_on_rack                   | [comet_submission/putting_shoes_on_rack](https://huggingface.co/sunshk/comet_submission/tree/main/17-36-51_pi05_b1k-pt12_cs32_bs32_lr2.5e-5_step100k_gpu80_jax/85000)                                                                                    |
-|        23 | boxing_books_up_for_storage             | [comet_submission/boxing_books_up_for_storage](https://huggingface.co/sunshk/comet_submission/tree/main/10-00-32_pi05_b1k-pt50_merge1110_cs32_bs64_lr2.5e-5_step50k_gpu400_jax/40000)                                                                    |
-|        24 | storing_food                            | [comet_submission/storing_food](https://huggingface.co/sunshk/comet_submission/tree/main/10-00-32_pi05_b1k-pt50_merge1110_cs32_bs64_lr2.5e-5_step50k_gpu400_jax/40000)                                                                                   |
-|        25 | clearing_food_from_table_into_fridge    | [comet_submission/clearing_food_from_table_into_fridge](https://huggingface.co/sunshk/comet_submission/tree/main/10-00-32_pi05_b1k-pt50_merge1110_cs32_bs64_lr2.5e-5_step50k_gpu400_jax/40000)                                                           |
-|        26 | assembling_gift_baskets                 | [comet_submission/assembling_gift_baskets](https://huggingface.co/sunshk/comet_submission/tree/main/10-00-32_pi05_b1k-pt50_merge1110_cs32_bs64_lr2.5e-5_step50k_gpu400_jax/40000)                                                                        |
-|        27 | sorting_household_items                 | [comet_submission/sorting_household_items](https://huggingface.co/sunshk/comet_submission/tree/main/2025-11-12-22-39-15_pi05_b1k-pt50_merge1112_hq_re_cs32_bs64_lr2.5e-6_step50k_gpu400_jax/15000)                                                       |
-|        28 | getting_organized_for_work              | [comet_submission/getting_organized_for_work](https://huggingface.co/sunshk/comet_submission/tree/main/10-00-32_pi05_b1k-pt50_merge1110_cs32_bs64_lr2.5e-5_step50k_gpu400_jax/40000)                                                                     |
-|        29 | clean_up_your_desk                      | [comet_submission/clean_up_your_desk](https://huggingface.co/sunshk/comet_submission/tree/main/10-00-32_pi05_b1k-pt50_merge1110_cs32_bs64_lr2.5e-5_step50k_gpu400_jax/40000)                                                                             |
-|        30 | setting_the_fire                        | [comet_submission/setting_the_fire](https://huggingface.co/sunshk/comet_submission/tree/main/06-20-28_pi05_b1k-pt12_merge_cs32_bs64_lr2.5e-5_step50k_gpu160_jax/40000)                                                                                   |
-|        31 | clean_boxing_gloves                     | [comet_submission/clean_boxing_gloves](https://huggingface.co/sunshk/comet_submission/tree/main/10-00-32_pi05_b1k-pt50_merge1110_cs32_bs64_lr2.5e-5_step50k_gpu400_jax/40000)                                                                            |
-|        32 | wash_a_baseball_cap                     | [comet_submission/wash_a_baseball_cap](https://huggingface.co/sunshk/comet_submission/tree/main/06-20-28_pi05_b1k-pt12_merge_cs32_bs64_lr2.5e-5_step50k_gpu160_jax/40000)                                                                                |
-|        33 | wash_dog_toys                           | [comet_submission/wash_dog_toys](https://huggingface.co/sunshk/comet_submission/tree/main/11-31-51_pi05_b1k-wash_dog_toys_cs32_bs32_lr2.5e-6_step15k_sft_pt50_merge_25k_jax/14999)                                                                       |
-|        34 | hanging_pictures                        | [comet_submission/hanging_pictures](https://huggingface.co/sunshk/comet_submission/tree/main/2025-11-15-03-13-35_pi05_b1k-hanging_pictures_roll1114_cs32_bs64_lr2.5e-6_step15k_re-pt50-49k_jax/14999)                                                    |
-|        35 | attach_a_camera_to_a_tripod             | [comet_submission/attach_a_camera_to_a_tripod](https://huggingface.co/sunshk/comet_submission/tree/main/06-20-28_pi05_b1k-pt12_merge_cs32_bs64_lr2.5e-5_step50k_gpu160_jax/25000)                                                                        |
-|        36 | clean_a_patio                           | [comet_submission/clean_a_patio](https://huggingface.co/sunshk/comet_submission/tree/main/10-00-32_pi05_b1k-pt50_merge1110_cs32_bs64_lr2.5e-5_step50k_gpu400_jax/40000)                                                                                  |
-|        37 | clean_a_trumpet                         | [comet_submission/clean_a_trumpet](https://huggingface.co/sunshk/comet_submission/tree/main/20-36-46_pi05_b1k-clean_a_trumpet_cs32_bs32_lr2.5e-5_step30k_jax/25000)                                                                                      |
-|        38 | spraying_for_bugs                       | [comet_submission/spraying_for_bugs](https://huggingface.co/sunshk/comet_submission/tree/main/2025-11-16-15-41-30_pi05_b1k-spraying_for_bugs_official_rollsamplehigher_lr2.5e-6_step20k_sft_resume_jax/15000)                                            |
-|        39 | spraying_fruit_trees                    | [comet_submission/spraying_fruit_trees](https://huggingface.co/sunshk/comet_submission/tree/main/06-46-38_pi05_b1k-pt50_cs32_bs64_lr2.5e-5_step50k_gpu400_jax/49999)                                                                                     |
-|        40 | make_microwave_popcorn                  | [comet_submission/make_microwave_popcorn](https://huggingface.co/sunshk/comet_submission/tree/main/2025-11-10-12-57-44_pi05_b1k-pt7_cs32_bs64_lr2.5e-5_step50k_gpu80_jax/49999)                                                                          |
-|        41 | cook_cabbage                            | [comet_submission/cook_cabbage](https://huggingface.co/sunshk/comet_submission/tree/main/10-00-32_pi05_b1k-pt50_merge1110_cs32_bs64_lr2.5e-5_step50k_gpu400_jax/40000)                                                                                   |
-|        42 | chop_an_onion                           | [comet_submission/chop_an_onion](https://huggingface.co/sunshk/comet_submission/tree/main/03-32-55_pi05_b1k-pt50_merge_cs32_bs64_lr2.5e-5_step50k_gpu400_jax/45000)                                                                                      |
-|        43 | slicing_vegetables                      | [comet_submission/slicing_vegetables](https://huggingface.co/sunshk/comet_submission/tree/main/2025-11-16-15-41-27_pi05_b1k-slicing_vegetables_official_rollsamplehigher_lr2.5e-6_step20k_sft_resume_jax/19999)                                          |
-|        44 | chopping_wood                           | [comet_submission/chopping_wood](https://huggingface.co/sunshk/comet_submission/tree/main/10-00-32_pi05_b1k-pt50_merge1110_cs32_bs64_lr2.5e-5_step50k_gpu400_jax/40000)                                                                                  |
-|        45 | cook_hot_dogs                           | [comet_submission/cook_hot_dogs](https://huggingface.co/sunshk/comet_submission/tree/main/2025-11-12-16-22-00_pi05_b1k-pt10_merge1112_re-pt12-49k-m_cs32_bs64_lr2.5e-6_step50k_gpu160_jax/40000)                                                         |
-|        46 | cook_bacon                              | [comet_submission/cook_bacon](https://huggingface.co/sunshk/comet_submission/tree/main/06-46-38_pi05_b1k-pt50_cs32_bs64_lr2.5e-5_step50k_gpu400_jax/49999)                                                                                               |
-|        47 | freeze_pies                             | [comet_submission/freeze_pies](https://huggingface.co/sunshk/comet_submission/tree/main/10-00-32_pi05_b1k-pt50_merge1110_cs32_bs64_lr2.5e-5_step50k_gpu400_jax/35000)                                                                                    |
-|        48 | canning_food                            | [comet_submission/canning_food](https://huggingface.co/sunshk/comet_submission/tree/main/10-00-32_pi05_b1k-pt50_merge1110_cs32_bs64_lr2.5e-5_step50k_gpu400_jax/40000)                                                                                   |
-|        49 | make_pizza                              | [comet_submission/make_pizza](https://huggingface.co/sunshk/comet_submission/tree/main/10-00-32_pi05_b1k-pt50_merge1110_cs32_bs64_lr2.5e-5_step50k_gpu400_jax/40000)                                                                                     |
+| pi05-b1kpt12-cs32 | Pretrained Model in tasks `0,1,6,17,18,22,30,32,34,35,40,45` with action chunk size 32                         | [openpi_comet/pi05-b1kpt12-cs32](https://huggingface.co/sunshk/openpi_comet/tree/main/pi05-b1kpt12-cs32)                                                                  |
+| pi05-b1kpt50-cs32 | Pretrained Model in tasks `0-49` with action chunk size 32                                                     | [openpi_comet/pi05-b1kpt50-cs32](https://huggingface.co/sunshk/openpi_comet/tree/main/pi05-b1kpt50-cs32)                                                                  |
+
+<details>
+<summary>Full Model Zoo (Per Task)</summary>
+
+| Model        | Use Case    | Task ID | Task Name                                                                                                 | HF URL                                |
+| ------------ | ----------- | --- | ----------------------------------------------------------------------------------------------------------- | --------------------------------------|
+| pi05-turning_on_radio-sft | SFT | 0 | turning_on_radio | [pi05-turning_on_radio-sft](https://huggingface.co/sunshk/comet_weights/blob/main/pi05-turning_on_radio-sft.zip) |
+| pi05-pt12-pretrain-75k | Pretrain | 1 | picking_up_trash | [pi05-pt12-pretrain-75k](https://huggingface.co/sunshk/comet_weights/blob/main/pi05-pt12-pretrain-75k.zip) |
+| pi05-putting_away_Halloween_decorations-sft | SFT | 2 | putting_away_Halloween_decorations | [pi05-putting_away_Halloween_decorations-sft](https://huggingface.co/sunshk/comet_weights/blob/main/pi05-putting_away_Halloween_decorations-sft.zip) |
+| pi05-pt50-pretrain-40k | Pretrain | 3, 4, 7, 9, 13, 15, 18, 20, 21, 23, 24, 25, 26, 28, 29, 31, 36, 41, 44, 48, 49 | cleaning_up_plates_and_food, can_meat, picking_up_toys, putting_up_Christmas_decorations_inside, loading_the_car, bringing_in_wood, tidying_bedroom, sorting_vegetables, collecting_childrens_toys, boxing_books_up_for_storage, storing_food, clearing_food_from_table_into_fridge, assembling_gift_baskets, getting_organized_for_work, clean_up_your_desk, clean_boxing_gloves, clean_a_patio, cook_cabbage, chopping_wood, canning_food, make_pizza | [openpi_comet/pi05-b1kpt50-cs32](https://huggingface.co/sunshk/comet_weights/blob/main/pi05-pt50-pretrain-40k.zip) |
+| pi05-pt50-pretrain-20k | Pretrain | 5 | setting_mousetraps | [pi05-pt50-pretrain-20k](https://huggingface.co/sunshk/comet_weights/blob/main/pi05-pt50-pretrain-20k.zip) |
+| pi05-hiding_Easter_eggs-rft | RFT | 6 | hiding_Easter_eggs | [pi05-hiding_Easter_eggs-rft](https://huggingface.co/sunshk/comet_weights/blob/main/pi05-hiding_Easter_eggs-rft.zip) |
+| pi05-pt50-pretrain-45k | Pretrain | 8, 42 | rearranging_kitchen_furniture, chop_an_onion | [pi05-pt50-pretrain-45k](https://huggingface.co/sunshk/comet_weights/blob/main/pi05-pt50-pretrain-45k.zip) |
+| pi05-set_up_a_coffee_station_in_your_kitchen-rft | RFT | 10 | set_up_a_coffee_station_in_your_kitchen | [pi05-set_up_a_coffee_station_in_your_kitchen-rft](https://huggingface.co/sunshk/comet_weights/blob/main/pi05-set_up_a_coffee_station_in_your_kitchen-rft.zip) |
+| pi05-putting_dishes_away_after_cleaning-rft | RFT | 11 | putting_dishes_away_after_cleaning | [pi05-putting_dishes_away_after_cleaning-rft](https://huggingface.co/sunshk/comet_weights/blob/main/pi05-putting_dishes_away_after_cleaning-rft.zip) |
+| pi05-preparing_lunch_box-rft | RFT | 12 | preparing_lunch_box | [pi05-preparing_lunch_box-rft](https://huggingface.co/sunshk/comet_weights/blob/main/pi05-preparing_lunch_box-rft.zip) |
+| pi05-pt50-pretrain-35k | Pretrain | 14, 47 | carrying_in_groceries, freeze_pies | [pi05-pt50-pretrain-35k](https://huggingface.co/sunshk/comet_weights/blob/main/pi05-pt50-pretrain-35k.zip) |
+| pi05-pt10-pretrain-40k | Pretrain | 16 | moving_boxes_to_storage | [pi05-pt10-pretrain-40k](https://huggingface.co/sunshk/comet_weights/blob/main/pi05-pt10-pretrain-40k.zip) |
+| pi05-pt10-pretrain-45k | Pretrain | 17 | bringing_water | [pi05-pt10-pretrain-45k](https://huggingface.co/sunshk/comet_weights/blob/main/pi05-pt10-pretrain-45k.zip) |
+| pi05-outfit_a_basic_toolbox-rft | RFT | 19 | outfit_a_basic_toolbox | [pi05-outfit_a_basic_toolbox-rft](https://huggingface.co/sunshk/comet_weights/blob/main/pi05-outfit_a_basic_toolbox-rft.zip) |
+| pi05-pt12-pretrain-85k | Pretrain | 22 | putting_shoes_on_rack | [pi05-pt12-pretrain-85k](https://huggingface.co/sunshk/comet_weights/blob/main/pi05-pt12-pretrain-85k.zip) |
+| pi05-pt50-pretrain-15k | Pretrain | 27 | sorting_household_items | [pi05-pt50-pretrain-15k](https://huggingface.co/sunshk/comet_weights/blob/main/pi05-pt50-pretrain-15k.zip) |
+| pi05-pt12-pretrain-40k | Pretrain | 30, 32 | setting_the_fire, wash_a_baseball_cap | [openpi_comet/pi05-b1kpt12-cs32](https://huggingface.co/sunshk/comet_weights/blob/main/pi05-pt12-pretrain-40k.zip) |
+| pi05-wash_dog_toys-sft | SFT | 33 | wash_dog_toys | [pi05-wash_dog_toys-sft](https://huggingface.co/sunshk/comet_weights/blob/main/pi05-wash_dog_toys-sft.zip) |
+| pi05-hanging_pictures-rft | RFT | 34 | hanging_pictures | [pi05-hanging_pictures-rft](https://huggingface.co/sunshk/comet_weights/blob/main/pi05-hanging_pictures-rft.zip) |
+| pi05-pt12-pretrain-25k | Pretrain | 35 | attach_a_camera_to_a_tripod | [pi05-pt12-pretrain-25k](https://huggingface.co/sunshk/comet_weights/blob/main/pi05-pt12-pretrain-25k.zip) |
+| pi05-clean_a_trumpet-sft | SFT | 37 | clean_a_trumpet | [pi05-clean_a_trumpet-sft](https://huggingface.co/sunshk/comet_weights/blob/main/pi05-clean_a_trumpet-sft.zip) |
+| pi05-spraying_for_bugs-rft | RFT | 38 | spraying_for_bugs | [pi05-spraying_for_bugs-rft](https://huggingface.co/sunshk/comet_weights/blob/main/pi05-spraying_for_bugs-rft.zip) |
+| pi05-pt50-pretrain-50k | Pretrain | 39, 46 | spraying_fruit_trees, cook_bacon | [pi05-pt50-pretrain-50k](https://huggingface.co/sunshk/comet_weights/blob/main/pi05-pt50-pretrain-50k.zip) |
+| pi05-pt7-pretrain-50k | Pretrain | 40 | make_microwave_popcorn | [pi05-pt7-pretrain-50k](https://huggingface.co/sunshk/comet_weights/blob/main/pi05-pt7-pretrain-50k.zip) |
+| pi05-slicing_vegetables-rft | RFT | 43 | slicing_vegetables | [pi05-slicing_vegetables-rft](https://huggingface.co/sunshk/comet_weights/blob/main/pi05-slicing_vegetables-rft.zip) |
+| pi05-pt10-pretrain-40k-re | Pretrain | 45 | cook_hot_dogs | [pi05-pt10-pretrain-40k-re](https://huggingface.co/sunshk/comet_weights/blob/main/pi05-pt10-pretrain-40k-re.zip) |
 
 
+</details>
 
 ### Finetune OpenPi
 
@@ -203,7 +201,7 @@ XLA_PYTHON_CLIENT_MEM_FRACTION=0.9 uv run scripts/train_val.py pi05_b1k-turning_
     or the checkpoint from our model zoo" # also be configurable in the config
 ```
 
-### Pretrain OpenPi
+### Pre-train OpenPi
 
 To support distributed training, we update `src/openpi/training/data_loader.py` for data sharding, and the `src/openpi/training/checkpoints_dist.py` and `scripts/train_dist.py` for distributed checkpointing management and training. To launch the pretrain, run the following command:
 
@@ -223,13 +221,13 @@ python scripts/compute_norm_stats.py --config-name ${config_name}
 python scripts/train_dist.py ${config_name} --exp_name=${exp_name} --overwrite
 ```
 
-### Rejection Sampling fine-tuning (RFT)
+### Post-train OpenPi using Rejection Sampling fine-tuning (RFT)
 
 To perform RFT, you need to first deploy the finetuned checkpoint, and then rollout the episodes in the BEHAVIOR-1K Simulator. We also observe that the `pose perturbator` helps improve the robustness of the RFT Algorithm. 
 
-1. Copy the `openpi_comet/rollout/learning` to `BEHAVIOR-1K/OmniGibson/omnigibson/learning`.
+1. Copy the `openpi_comet/data_generation/rollout/learning` to `BEHAVIOR-1K/OmniGibson/omnigibson/learning`.
 ```bash
-cp -r rollout/learning/* BEHAVIOR-1K/OmniGibson/omnigibson/learning/
+cp -r data_generation/rollout/learning/* BEHAVIOR-1K/OmniGibson/omnigibson/learning/
 ```
 NOTE: be careful to the latest commit of the BEHAVIOR-1K repo.
 
@@ -254,7 +252,7 @@ where `parallel_evaluator_start_idx` and `parallel_evaluator_end_idx` are the st
 After the rollout, you can build the RFT dataset by running the following command:
 
 ```bash
-python rollout/create_rft_dataset.py \
+python data_generation/rollout/create_rft_dataset.py \
     --rollout_dir $PATH_TO_ROLLOUT_DATASET \
     --rft_dir $PATH_TO_RFT_DATASET
 ```
