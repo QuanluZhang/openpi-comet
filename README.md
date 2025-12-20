@@ -267,9 +267,9 @@ After finetuning, you can run evaluation by following the steps below:
 
     uv run scripts/serve_b1k.py \
       --task_name=$TASK_NAME \
-      policy:checkpoint \
       --control_mode=receeding_horizon \
       --max_len=32 \
+      policy:checkpoint \
       --policy.config=pi05_b1k-base \
       --policy.dir=$PATH_TO_CKPT
     ```
