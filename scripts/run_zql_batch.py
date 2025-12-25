@@ -19,7 +19,8 @@ def main():
         "env_wrapper._target_=behavior.learning.wrappers.RGBWrapper",
     ]
     outer_repeats = 4
-    instance_range = range(10)
+    # instance_range = range(10)
+    instance_range = range(10, 19)
 
     # Set CUDA_VISIBLE_DEVICES environment variable
     env = os.environ.copy()
