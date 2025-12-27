@@ -597,7 +597,7 @@ class TrainConfig:
     # device memory will be reduced but training could potentially be slower.
     # eg. if total device is 4 and fsdp devices is 2; then the model will shard to 2 devices and run
     # data parallel between 2 groups of devices.
-    fsdp_devices: int = 1
+    fsdp_devices: int = 2
 
     # How often (in steps) to log validation metrics.
     val_log_interval: int = 100
@@ -922,13 +922,43 @@ _CONFIGS = [
                 fine_grained_level=0,  # 0, 1, 2
             ),
         ),
-        weight_loader=weight_loaders.CheckpointWeightLoader("path_to_your_pretrained_checkpoint"),
+        # weight_loader=weight_loaders.CheckpointWeightLoader("path_to_your_pretrained_checkpoint"),
+        weight_loader=weight_loaders.CheckpointWeightLoader("/mnt/public/quanlu/openpai_comet_model/pi05-b1kpt12-cs32/params"),
         num_train_steps=20_000,
         lr_schedule=_optimizer.CosineDecaySchedule(
             peak_lr=2.5e-6,
             decay_steps=20_000,
         ),
         freeze_filter=pi0_config.Pi0Config(pi05=True, action_horizon=32).get_freeze_filter(),
+        ema_decay=None,
+        checkpoint_base_dir=".",
+        num_workers=8,
+        batch_size=8 * 32,
+    ),
+    # SFT Config with LoRA enabled (requires less GPU memory: ~22.5 GB vs ~70 GB for full fine-tuning)
+    TrainConfig(
+        name="pi05_b1k-turning_on_radio_lora_lr2.5e-6_step20k_sft",
+        exp_name="openpi",
+        project_name="B1K",
+        model=pi0_config.Pi0Config(pi05=True, action_horizon=32, paligemma_variant="gemma_2b_lora"),
+        data=LeRobotB1KDataConfig(
+            repo_id="behavior-1k/2025-challenge-demos",
+            base_config=DataConfig(
+                prompt_from_task=True,
+                behavior_dataset_root="../DATASETS/behavior/2025-challenge-demos",
+                tasks=["turning_on_radio"],
+                fine_grained_level=0,  # 0, 1, 2
+            ),
+        ),
+        # weight_loader=weight_loaders.CheckpointWeightLoader("path_to_your_pretrained_checkpoint"),
+        weight_loader=weight_loaders.CheckpointWeightLoader("/mnt/public/quanlu/openpai_comet_model/pi05-b1kpt12-cs32/params"),
+        num_train_steps=20_000,
+        lr_schedule=_optimizer.CosineDecaySchedule(
+            peak_lr=2.5e-6,
+            decay_steps=20_000,
+        ),
+        # freeze_filter automatically handles LoRA: freezes base model params, keeps LoRA params trainable
+        freeze_filter=pi0_config.Pi0Config(pi05=True, action_horizon=32, paligemma_variant="gemma_2b_lora").get_freeze_filter(),
         ema_decay=None,
         checkpoint_base_dir=".",
         num_workers=8,
