@@ -20,7 +20,8 @@ def main():
     ]
     outer_repeats = 4
     # instance_range = range(10)
-    instance_range = range(10, 19)
+    # instance_range = range(10, 19)
+    instance_range = range(20)
 
     # Set CUDA_VISIBLE_DEVICES environment variable
     env = os.environ.copy()
